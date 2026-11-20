@@ -1,0 +1,3 @@
+User-agent: *
+Allow: /
+Sitemap: https://huimao28.github.io/huimao-website/sitemap.xml
