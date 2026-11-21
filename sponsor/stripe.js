@@ -1,15 +1,7 @@
-const form=document.querySelector('#stripe-form');
-const message=document.querySelector('#stripe-message');
-form?.addEventListener('submit',async event=>{
- event.preventDefault();
- const button=form.querySelector('button');
- const amount=Number(form.amount.value);
- if(!Number.isFinite(amount)||amount<1||amount>1000){message.textContent='请输入 $1 至 $1000 之间的金额。';return}
- button.disabled=true;button.textContent='正在前往 Stripe…';message.textContent='正在创建安全结账页面。';
- try{
-  const response=await fetch('https://pay.huimaotech.com/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount})});
-  const data=await response.json();
-  if(!response.ok||!data.url)throw new Error(data.error||'checkout failed');
-  location.href=data.url;
- }catch(error){message.textContent='暂时无法启动支付，请稍后重试。';button.disabled=false;button.textContent='使用 Stripe 支付'}
-});
+const API='https://pay.huimaotech.com';
+const form=document.querySelector('#stripe-form'),message=document.querySelector('#stripe-message');
+form?.addEventListener('submit',async e=>{e.preventDefault();const button=form.querySelector('button'),amount=Number(form.amount.value);if(!Number.isFinite(amount)||amount<1||amount>1000){message.textContent='请输入 $1 至 $1000 之间的金额。';return}button.disabled=true;button.textContent='正在前往 Stripe…';try{const r=await fetch(API+'/checkout',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({amount,nickname:form.nickname.value,message:form.message.value,public:form.public.checked})}),d=await r.json();if(!r.ok||!d.url)throw Error();location.href=d.url}catch{message.textContent='暂时无法启动支付，请稍后重试。';button.disabled=false;button.textContent='使用 Stripe 支付'}});
+const manual=document.querySelector('#manual-form'),manualMsg=document.querySelector('#manual-message');
+manual?.addEventListener('submit',async e=>{e.preventDefault();const button=manual.querySelector('button'),data=Object.fromEntries(new FormData(manual));data.amount=Number(data.amount);button.disabled=true;try{const r=await fetch(API+'/submit',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}),d=await r.json();if(!r.ok)throw Error(d.error);manualMsg.textContent='已提交，核验通过后会出现在名单中。';manual.reset()}catch(err){manualMsg.textContent=err.message||'提交失败，请稍后重试。'}finally{button.disabled=false}});
+const esc=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+async function loadSponsors(){const box=document.querySelector('#sponsor-items'),stats=document.querySelector('#sponsor-stats');try{const d=await(await fetch(API+'/sponsors')).json();stats.innerHTML=d.stats.map(x=>`<span>${x.currency} ${(x.amount/100).toFixed(2)} · ${x.count} 笔</span>`).join('');box.innerHTML=d.sponsors.length?d.sponsors.map(x=>`<article><div><b>${esc(x.nickname)}</b><span>${esc(x.source)}</span></div><strong>${esc(x.currency)} ${(x.amount/100).toFixed(2)}</strong>${x.message?`<p>${esc(x.message)}</p>`:''}</article>`).join(''):'<p>还没有公开赞助，期待第一位支持者。</p>'}catch{box.innerHTML='<p>名单暂时无法加载。</p>'}}loadSponsors();
