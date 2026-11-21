@@ -2,7 +2,7 @@
   'use strict';
 
   const STORAGE_KEY = 'huimao.locale';
-  const LOCALES = ['zh-cn', 'zh-hk', 'zh-tw', 'zh-mo', 'en-us', 'ru-ru', 'fr-fr', 'es-es', 'pt-pt'];
+  const LOCALES = ['zh-cn', 'zh-hk', 'zh-tw', 'zh-mo', 'en-us', 'ru-ru', 'fr-fr', 'es-es', 'pt-pt', 'ja-jp'];
 
   function detectedLocale() {
     const languages = (navigator.languages && navigator.languages.length)
@@ -17,6 +17,7 @@
         if (parts.includes('mo')) return 'zh-mo';
         return 'zh-cn';
       }
+      if (language.startsWith('ja')) return 'ja-jp';
       if (language.startsWith('en')) return 'en-us';
       if (language.startsWith('ru')) return 'ru-ru';
       if (language.startsWith('fr')) return 'fr-fr';
