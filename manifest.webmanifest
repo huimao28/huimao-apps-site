@@ -1,0 +1,1 @@
+{"name":"灰猫应用","short_name":"灰猫","description":"灰猫 Android 应用产品官网","lang":"zh-CN","start_url":"./","display":"standalone","background_color":"#fff9ff","theme_color":"#74518d","icons":[{"src":"assets/map-icon.png","sizes":"512x512","type":"image/png","purpose":"any maskable"}]}
